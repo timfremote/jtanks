@@ -1,0 +1,127 @@
+<project name="jtanks" default="all-artifacts">
+  <property file="build.properties"/>
+  <import file="build-defs.xml"/>
+
+	<taskdef name="groovyc"
+	         classname="org.codehaus.groovy.ant.Groovyc"
+	         classpathref="src-build-path"/>
+	
+  <!-- You can use ConTest to run functional tests that verify concurrency behaviour.                    -->
+  <!-- You can get ConTest from http://www.alphaworks.ibm.com/tech/contest.                              -->
+  <!-- If it is installed, uncomment the below and set to the directory where it is installed,           -->
+  <!-- or put the property name and value in a file called build.properties in the JTanks home directory -->
+  <!-- (where build.xml is located).                                                                     -->
+  <!-- <property name="contest.dir" value="/path/to/ConTest/"/>                                          -->
+	
+  <target name="clean-slate">
+    <refresh-dir dir="build"/>
+    <refresh-dir dir="dist"/>
+    <refresh-dir dir="test-build"/>
+    <refresh-dir dir="test-results"/>
+    <refresh-dir dir="functional-test-results"/>
+  </target>
+
+  <target name="class-files" depends="clean-slate">
+    <groovyc srcdir="src" destdir="build">
+      <classpath>
+        <path refid="src-build-path"/>
+      </classpath>
+    	<javac debug="true"/>  
+  	</groovyc>
+  </target>
+
+  <target name="app-jar" depends="class-files">
+    <jar destfile="dist/jtanks.jar" basedir="build">
+      <manifest>
+      	<attribute name="Class-Path" value="groovy-all-1.6.4.jar"/>
+      	<attribute name="Main-Class" value="com.jtanks.controller.Main"/>
+      </manifest>
+    </jar>
+  	<copy toDir="dist">
+      <fileset dir="lib/deploy">
+        <include name="*.jar"/>
+      </fileset>
+  	</copy>
+  </target>
+
+  <target name="src-tar" depends="clean-slate">
+    <tar destfile="dist/jtanks.tar.gz" basedir="." compression="gzip">
+      <exclude name="build"/>
+      <exclude name="dist"/>
+    </tar>
+  </target>
+
+  <path id="src-build-path">
+    <fileset dir="lib/deploy">
+      <include name="**/*.jar"/>  
+    </fileset>
+  </path>
+
+  <path id="test-build-path">
+    <path refid="src-build-path"/>
+    <pathelement location="build"/>
+    <fileset dir="lib/develop">
+      <include name="**/*.jar"/>  
+    </fileset>
+  </path>
+
+  <path id="test-run-path">
+    <path refid="test-build-path"/>
+    <pathelement location="test-build"/>
+  </path>
+
+  <target name="test-class-files" depends="clean-slate, class-files">
+    <javac srcdir="test:functionaltest" destdir="test-build" debug="true">
+      <classpath refid="test-build-path"/>
+    </javac>
+  </target>
+
+  <target name="unit-test-results" depends="class-files, test-class-files">
+    <junit printsummary="true" failureproperty="unit.tests.failed">
+      <classpath refid="test-run-path"/>
+      <formatter type="xml"/>
+      <batchtest todir="test-results">
+        <fileset dir="test">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="unit-test-report" depends="unit-test-results"      
+          description="Run and report on unit tests. Fails if any test fails.">
+    <junitreport todir="test-results">
+      <fileset dir="test-results"/>
+      <report todir="test-results"/>
+    </junitreport>
+    <fail message="Unit tests failed. See test-results/index.html for details." if="unit.tests.failed"/>
+  </target>
+
+  <target name="functional-test-results" depends="class-files, test-class-files" if="contest.dir">
+  	<junit printsummary="true" failureproperty="functional.tests.failed" fork="yes">
+      <jvmarg value="-javaagent:${contest.dir}/JavaConTest/Lib/ConTest.jar"/>
+  	  <jvmarg value="-Dcontest.preferences=ConTestProperties.txt"/>
+  	  <classpath refid="test-run-path"/>
+  	  <formatter type="xml"/>
+  	  <batchtest todir="functional-test-results">
+  	    <fileset dir="functionaltest">
+  	      <include name="**/*Test.java"/>
+  	    </fileset>
+  	  </batchtest>
+  	</junit>
+  </target>
+	
+  <target name="functional-test-report" depends="functional-test-results" if="contest.dir"  
+          description="Run and report on functional tests. Fails if any test fails. Must have ConTest installed (see build.xml for details)">
+    <junitreport todir="functional-test-results">
+      <fileset dir="functional-test-results"/>
+      <report todir="functional-test-results"/>
+    </junitreport>
+	<fail message="Functional tests failed. See functional-test-results/index.html for details." 
+		  if="functional.tests.failed"/>
+  </target>
+
+  <target name="all-artifacts" depends="app-jar, src-tar, unit-test-report, functional-test-report"
+          description="Create in the dist directory all artifacts needed to distribute a working copy of jtanks"/>
+	
+</project>

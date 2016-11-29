@@ -1,0 +1,19 @@
+This is a list of things we would like to do with JTanks.
+
+Add findbugs, testability explorer
+Put score in tanks.
+Split into packages for model [Tank, GameState], view [ArenaDisplay, ScoreBoard], and controller [Arena, Scorer].
+Rebuild all jtanks and jtanks.util classes using TDD.
+Allow arbitrary number of tanks.
+Allow arbitrary arena size.
+Make it easy to build unit tests for drivers, without a mocking library.
+  - For example, you should be able to install a TestRadar in a Tank,
+    and easily set this Radar to report whatever you want to the driver.
+Eliminate Eclipse dependency.
+Provide installation instructions.
+Provide usage instructions (how to run a dojo using JTanks).
+Provide pluggable modules to enforce rules at startup:
+  - Modules can include unit-test coverage, checkstyle, Law of Demeter,
+    Extreme OO, and so on.
+  - Modules can give noncompliant tanks a penalty or eliminate entirely.
+  

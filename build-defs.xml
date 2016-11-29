@@ -1,0 +1,10 @@
+<project name="build-defs">
+  <macrodef name="refresh-dir" 
+            description="Deletes given directory and recreates it">
+    <attribute name="dir"/>
+    <sequential>
+      <delete quiet="yes" dir="@{dir}"/>
+      <mkdir dir="@{dir}"/>
+    </sequential>
+  </macrodef>
+</project>

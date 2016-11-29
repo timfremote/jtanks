@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="develop">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/develop/junit-dep-4.9b2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/jmock-legacy-2.6.0-RC1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/cglib-nodep-2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/jmock-2.6.0-RC1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/narrative-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/hamcrest-all-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/objenesis-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/develop/jmock-junit4-2.6.0-RC1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
